@@ -19,7 +19,7 @@ isimipInputPath <- file.path(
 
 areaPath <- "."
 areaFile <- "cellArea.nc"
-area <- loadWeights(file.path(areaPath, areaFile), normalize = FALSE)
+area <- loadWeights(file.path(areaPath, areaFile), normalize = FALSE, rescaleOcean = FALSE)
 
 popPath <- file.path(isimipInputPath, "socioeconomic/pop/histsoc")
 popFile <- "population_histsoc_30arcmin_annual_1901_2021.nc"

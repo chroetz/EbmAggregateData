@@ -23,6 +23,7 @@ for (partNr in seq_len(nParts)) {
   mask <- loadWeights(
     file.path(doseMaskPath, doseMaskFile), 
     normalize = TRUE,
+    rescaleOcean = TRUE,
     varSubset = seq_len(maxLen) + (partNr-1)*maxLen)
   
   calculateYearlyAggregationAndWriteAsCsv(

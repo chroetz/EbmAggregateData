@@ -13,7 +13,10 @@ stopifnot(varName %in% allVarNames)
 countryMaskPath <- file.path(isimipInputPath, "geo_conditions/countrymasks")
 countryMaskFile <- "countrymasks_fractional.nc"
 
-mask <- loadWeights(file.path(countryMaskPath, countryMaskFile), normalize=TRUE)
+mask <- loadWeights(
+  file.path(countryMaskPath, countryMaskFile), 
+  rescaleOcean = TRUE,
+  normalize = TRUE)
 
 calculateYearlyAggregationAndWriteAsCsv(
   varName,

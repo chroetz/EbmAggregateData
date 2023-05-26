@@ -155,15 +155,24 @@ loadGlobalYearlyNc <- function(filePath, varName) {
 #' Load a weight matrix from a netCDF mask array file
 #'
 #' @param filePath Path to a netCDF file with dimension `lon` and `lat`.
-#' @param normalize Should the weights be normalized to sum to 1?
-#' @param varSubset `NULL` or an integer vector of indices of the variables to be read (starting at 1).
+#' @param normalize Should the weights be normalized to colSum to 1?
+#' @param rescaleOcean Should the weights be normalized to rowSum to 1? Done
+#'   before normalize.
+#' @param varSubset `NULL` or an integer vector of indices of the variables to
+#'   be read (starting at 1).
 #' @return A list of following objects.
 #' \itemize{
 #'   \item lon: longitude values (increasing order),
 #'   \item lat: latitude values (decreasing order),
 #'   \item weightMatrix: A matrix of with one column for each variable in the netCDF file and number of rows equal to the product of number of lon and lat values.
 #' }
-loadWeights <- function(filePath, normalize, varSubset = NULL) {
+loadWeights <- function(
+    filePath, 
+    normalize = FALSE, 
+    varSubset = NULL, 
+    rescaleOcean = FALSE, 
+    removePattern = "world"
+) {
   
   stopifnot(is.character(filePath), length(filePath) == 1)
   
@@ -228,10 +237,19 @@ loadWeights <- function(filePath, normalize, varSubset = NULL) {
   dim(weightMatrix) <- c(prod(dim(weightMatrix)[1:2]), dim(weightMatrix)[3])
   colnames(weightMatrix) <- varNames
   
+  for (regex in removePattern) {
+    sel <- !grepl(regex, colnames(weightMatrix))
+    weightMatrix <- weightMatrix[, sel]
+  }
+  
+  if (rescaleOcean) {
+    weightMatrix <- sweep(weightMatrix, 1, rowSums(weightMatrix), "/")
+    weightMatrix[is.na(weightMatrix)] <- 0
+  }
+  
   if (normalize) {
     weightMatrix <- sweep(weightMatrix, 2, colSums(weightMatrix), "/")
-    colsumError <- abs(colSums(weightMatrix) - 1)
-    stopifnot(abs(colsumError) < 1e-14 | is.na(colsumError))
+    weightMatrix[is.na(weightMatrix)] <- 0
   }
   
   return(list(

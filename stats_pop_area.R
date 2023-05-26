@@ -19,7 +19,10 @@ isimipInputPath <- file.path(
 
 areaPath <- "."
 areaFile <- "cellArea.nc"
-area <- loadWeights(file.path(areaPath, areaFile), normalize = FALSE)
+area <- loadWeights(
+  file.path(areaPath, areaFile), 
+  normalize = FALSE,
+  rescaleOcean = FALSE)
 
 popPath <- file.path(isimipInputPath, "socioeconomic/pop/histsoc")
 popFile <- "population_histsoc_30arcmin_annual_1901_2021.nc"
@@ -28,7 +31,10 @@ pop <- loadGlobalYearlyNc(file.path(popPath, popFile), "total-population")
 countryMaskPath <- file.path(isimipInputPath, "geo_conditions/countrymasks")
 countryMaskFile <- "countrymasks_fractional.nc"
 
-mask <- loadWeights(file.path(countryMaskPath, countryMaskFile), normalize=FALSE)
+mask <- loadWeights(
+  file.path(countryMaskPath, countryMaskFile), 
+  normalize = FALSE,
+  rescaleOcean = TRUE)
 
 countryAreaMat <- crossprod(mask$weightMatrix, area$weightMatrix)
 rownames(countryAreaMat) <- substring(rownames(countryAreaMat), 3)
