@@ -369,7 +369,7 @@ aggregateYearlyAverageMonth <- function(filePath, aggregationMask, population, c
   yearlyData <-
     monthlyData |>
     summarise(value = mean(value), .by=c(iso, year, weight, fun)) |> 
-    mutate(iso = substring(iso, 3))
+    mutate(iso = stringr::str_remove(iso, "^m_"))
   
   return(yearlyData)
 }
@@ -437,7 +437,7 @@ aggregateYearly <- function(filePath, aggregationMask, population, cellArea, fun
     left_join(
       data$years |> rowid_to_column("index") |> select(year, index), 
       by = "index") |> 
-    mutate(iso = substring(iso, 3)) |> 
+    mutate(iso = stringr::str_remove(iso, "^m_")) |> 
     select(-index) |> 
     relocate(iso, year, fun, weight, value) |> 
     arrange(iso, year, fun, weight)

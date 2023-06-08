@@ -37,7 +37,7 @@ mask <- loadWeights(
   rescaleOcean = TRUE)
 
 countryAreaMat <- crossprod(mask$weightMatrix, area$weightMatrix)
-rownames(countryAreaMat) <- substring(rownames(countryAreaMat), 3)
+rownames(countryAreaMat) <- stringr::str_remove(rownames(countryAreaMat), "^m_")
 colnames(countryAreaMat) <- "area"
 countryArea <- as_tibble(countryAreaMat, rownames = "iso")
 
@@ -47,7 +47,7 @@ popValues <- pop$values
 popValues[is.na(popValues)] <- 0
 countryPopMat <- crossprod(mask$weightMatrix, popValues)
 colnames(countryPopMat) <- as.character(pop$years$year)
-rownames(countryPopMat) <- substring(rownames(countryPopMat), 3)
+rownames(countryPopMat) <- stringr::str_remove(rownames(countryPopMat), "^m_")
 countryPop <- 
   as_tibble(countryPopMat, rownames = "iso") |> 
   pivot_longer(-iso, names_to="year", values_to="pop", names_transform=list(year = as.integer))
